@@ -1,0 +1,29 @@
+# FastAPI Backend
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.4.2
+python-dotenv==1.0.0
+
+# AI & Search
+groq==0.4.1
+tavily-python==0.3.3
+
+# Database
+boto3==1.29.7
+
+# Vector Database
+chromadb==0.4.22
+pypdf==3.17.4
+sentence-transformers==2.3.1
+
+# Document Processing
+python-docx==1.1.0
+openpyxl==3.1.2
+reportlab==4.0.7
+
+# HTTP & Utilities
+requests==2.31.0
+httpx==0.25.2
+
+# CORS
+fastapi-cors==0.0.6

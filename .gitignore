@@ -1,0 +1,57 @@
+# Environment variables
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Vector Database (local data - don't push to git)
+vector_db/chroma_data/
+*.db
+*.sqlite
+
+# Demo/Documentation files (optional - comment out if you want to include)
+DEMONSTRATION_GUIDE.md
+DEMO_QUICK_REFERENCE.txt
+DEMO_CHECKLIST.md
+business_documents/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test files
+test_*.py
+*_test.py

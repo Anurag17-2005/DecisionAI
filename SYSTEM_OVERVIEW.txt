@@ -1,0 +1,392 @@
+================================================================================
+DECISION AI - BUSINESS INTELLIGENCE SYSTEM OVERVIEW
+================================================================================
+
+✅ COMPLETED IMPLEMENTATION
+
+This system helps businesses analyze data and make strategic decisions by 
+combining INTERNAL company data with EXTERNAL market intelligence.
+
+================================================================================
+ARCHITECTURE
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                          USER QUESTION                               │
+│          "Should we expand to France market in 2026?"                │
+└───────────────────────────────┬─────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                        GROQ AI AGENT                                 │
+│                  (Intelligent Decision Engine)                       │
+│                                                                       │
+│  • Analyzes question type (Internal/External/Strategic)              │
+│  • Selects appropriate tools                                         │
+│  • Combines data from multiple sources                               │
+│  • Generates data-driven recommendations                             │
+└──────────────┬─────────────────────────────┬────────────────────────┘
+               │                             │
+               ▼                             ▼
+┌──────────────────────────┐    ┌──────────────────────────┐
+│   INTERNAL DATA TOOLS    │    │  EXTERNAL DATA TOOLS     │
+│    (DynamoDB Tables)     │    │    (Web Search API)      │
+├──────────────────────────┤    ├──────────────────────────┤
+│ • Users                  │    │ • Market Trends          │
+│ • Sales                  │    │ • Industry Analysis      │
+│ • Feature Requests       │    │ • Competitor Intel       │
+│ • Tasks                  │    │ • Best Practices         │
+│ • Decisions              │    │ • Current Events         │
+│ • Competitors            │    │ • Expert Opinions        │
+└──────────────────────────┘    └──────────────────────────┘
+
+================================================================================
+DATA SOURCES
+================================================================================
+
+1. INTERNAL DATA (6 DynamoDB Tables)
+   ├── users: Customer information, plans, locations
+   ├── sales: Revenue, growth, churn by country
+   ├── feature_requests: User-voted features, priorities
+   ├── tasks: Company projects, assignments, status
+   ├── decisions: Past decisions, confidence, outcomes
+   └── competitors: Market share, pricing, ratings
+
+2. EXTERNAL DATA (Tavily Web Search)
+   ├── Quality threshold: 0.85 (high-confidence results only)
+   ├── Market trends and forecasts
+   ├── Industry benchmarks
+   ├── Competitor strategies
+   └── Best practices
+
+================================================================================
+QUESTION TYPES & AGENT BEHAVIOR
+================================================================================
+
+TYPE A: PURE INTERNAL QUESTIONS (Database Only)
+────────────────────────────────────────────────
+Q: "How many users are from Berlin and active?"
+→ query_users(city="Berlin", active=true)
+→ Returns: Count + breakdown by plan
+
+Q: "Which country has the highest revenue?"
+→ get_top_countries(metric="revenue", limit=1)
+→ Returns: Country name + revenue + user count
+
+Q: "How many decisions are approved?"
+→ query_decisions(status="Approved")
+→ Returns: Count + confidence breakdown
+
+
+TYPE B: PURE EXTERNAL QUESTIONS (Web Search Only)
+──────────────────────────────────────────────────
+Q: "What are the market trends in France?"
+→ web_search("France market trends 2026")
+→ Returns: Market analysis from external sources
+
+Q: "Best practices for hiring interns?"
+→ web_search("intern hiring best practices")
+→ Returns: Industry recommendations
+
+
+TYPE C: STRATEGIC QUESTIONS (BOTH Sources - CRITICAL!)
+───────────────────────────────────────────────────────
+Q: "Should we expand to France?"
+→ STEP 1: query_sales(country="France") - Current performance
+→ STEP 2: search_similar_decision("France") - Past decisions
+→ STEP 3: web_search("France market expansion 2026") - Market intel
+→ STEP 4: Synthesize recommendation with ALL data
+
+Q: "Should we hire more engineers?"
+→ STEP 1: query_tasks(department="Engineering") - Workload
+→ STEP 2: get_user_stats() - User growth trend
+→ STEP 3: web_search("tech hiring market 2026") - Market conditions
+→ STEP 4: Data-driven hiring recommendation
+
+Q: "Should we increase pricing by 20%?"
+→ STEP 1: query_sales() - Current revenue metrics
+→ STEP 2: query_competitors() - Competitor pricing
+→ STEP 3: web_search("SaaS pricing trends 2026") - Industry benchmarks
+→ STEP 4: Pricing strategy recommendation
+
+================================================================================
+AVAILABLE TOOLS (Agent Function Calling)
+================================================================================
+
+INTERNAL DATA TOOLS (15 Read Functions)
+────────────────────────────────────────
+Users:
+  • query_users(country, plan, city, active, company)
+  • get_user_stats()
+
+Sales:
+  • query_sales(country, min_revenue, min_growth, max_churn)
+  • get_top_countries(metric, limit)
+  • get_sales_summary()
+
+Features:
+  • query_features(priority, status, min_votes)
+  • get_top_features(limit)
+
+Tasks:
+  • query_tasks(status, department, assignee)
+  • get_task_stats()
+
+Decisions:
+  • query_decisions(status, min_confidence)
+  • search_similar_decision(question)
+  • get_decision_stats()
+
+Competitors:
+  • query_competitors(country, min_rating, min_market_share)
+  • get_competitor_analysis()
+
+EXTERNAL DATA TOOLS
+───────────────────
+  • web_search(query, max_results=3)
+    - Quality threshold: 0.85 (high-confidence only)
+    - Returns: AI summary + top 3 verified sources
+
+CRUD OPERATIONS (Background - 18 Create/Update/Delete Functions)
+─────────────────────────────────────────────────────────────────
+Users: create_user, update_user, delete_user
+Sales: create_sales_record, update_sales_record, delete_sales_record
+Features: create_feature_request, update_feature_request, delete_feature_request
+Tasks: create_task, update_task, delete_task
+Decisions: create_decision, update_decision, delete_decision
+Competitors: create_competitor, update_competitor, delete_competitor
+
+================================================================================
+EXAMPLE INTERACTIONS
+================================================================================
+
+Example 1: Internal Query
+──────────────────────────
+User: "How many users are from Berlin that are active?"
+
+Agent Process:
+  1. Identifies: Internal data question
+  2. Calls: query_users(city="Berlin", active=true)
+  3. Returns:
+     **Data:** 12 active users in Berlin
+     • Pro plan: 7 users (58%)
+     • Enterprise: 3 users (25%)
+     • Free: 2 users (17%)
+
+
+Example 2: Strategic Decision
+──────────────────────────────
+User: "Should we expand to the Netherlands market?"
+
+Agent Process:
+  1. Identifies: Strategic decision (Type C - needs BOTH data sources)
+  
+  2. Internal Analysis:
+     - Calls: query_sales(country="Netherlands")
+     - Result: €21,300/month revenue, 456 users, 24% growth
+     
+  3. Past Decisions:
+     - Calls: search_similar_decision("Netherlands expansion")
+     - Result: No similar decisions found
+     
+  4. External Intelligence:
+     - Calls: web_search("Netherlands market expansion tech 2026")
+     - Result: Market insights, competition, regulations
+     
+  5. Synthesized Response:
+     **Internal Analysis:**
+     • Current NL performance: €21,300/month (456 users)
+     • Strong 24% yearly growth
+     • 4th largest market by revenue
+     
+     **Market Intelligence:**
+     • Netherlands has thriving tech ecosystem
+     • High English proficiency, easy market entry
+     • Competitive landscape moderate
+     
+     **Recommendation:**
+     ✅ YES - Expand to Netherlands
+     • Strong existing base to build on
+     • Market conditions favorable
+     • Lower entry barriers vs other EU markets
+     • Suggest: Focus on Amsterdam, Rotterdam tech hubs
+
+
+Example 3: Competitive Analysis
+────────────────────────────────
+User: "How do we compare to competitors in Germany?"
+
+Agent Process:
+  1. Internal Data:
+     - query_sales(country="Germany")
+     - query_competitors(country="Germany")
+     
+  2. External Data:
+     - web_search("Germany career tech market 2026")
+     
+  3. Response:
+     **Your Position:**
+     • Revenue: €24,000/month
+     • Users: 523 active
+     
+     **Top Competitors:**
+     1. ResumeGenius AI - €19/month, 18% market share
+     2. InterviewAce - €25/month, 9% market share
+     
+     **Market Analysis:**
+     • You're competitively priced
+     • Market growing at 12% annually
+     • AI features are key differentiator
+     
+     **Recommendation:**
+     • Maintain current pricing
+     • Emphasize AI capabilities in marketing
+     • Target enterprise segment (higher margins)
+
+================================================================================
+TECHNICAL DETAILS
+================================================================================
+
+API Configuration:
+├── Groq AI: qwen/qwen3-32b model
+├── Tavily Search: Advanced depth, 0.85 quality threshold
+├── DynamoDB: AWS eu-north-1 region
+└── Max response: 500 tokens (~200 words)
+
+Backend Endpoints:
+├── POST /agent/chat - Main chat interface
+├── POST /agent/reset - Reset conversation
+└── GET / - System status check
+
+Environment Variables:
+├── GROQ_API_KEY - AI agent
+├── TAVILY_API_KEY - Web search
+├── AWS_ACCESS_KEY_ID - Database access
+├── AWS_SECRET_ACCESS_KEY - Database access
+└── AWS_REGION - Database region
+
+================================================================================
+KEY FEATURES
+================================================================================
+
+✅ Intelligent tool selection (knows when to use database vs web vs both)
+✅ Multi-source data synthesis (combines internal + external data)
+✅ High-quality results only (0.85 confidence threshold)
+✅ Concise responses (200 words max)
+✅ Data-driven recommendations
+✅ Past decision learning (searches historical decisions)
+✅ Real-time market intelligence
+✅ Conversational memory (maintains context)
+
+================================================================================
+USAGE TIPS
+================================================================================
+
+For Best Results:
+─────────────────
+1. Ask specific questions with context
+   ❌ "Tell me about users"
+   ✅ "How many active users in Germany on Pro plan?"
+
+2. For decisions, provide context
+   ❌ "Should we expand?"
+   ✅ "Should we expand to France market given our current growth?"
+
+3. Strategic questions work best
+   - Agent shines when combining internal + external data
+   - Ask "should we" questions for comprehensive analysis
+
+4. Follow-up questions leverage conversation memory
+   - "Tell me more about the competitors"
+   - "What about the pricing strategy?"
+
+================================================================================
+WHAT MAKES THIS SYSTEM SPECIAL
+================================================================================
+
+1. DUAL DATA SOURCES
+   Most systems use only internal OR external data.
+   This agent intelligently combines BOTH for superior insights.
+
+2. INTELLIGENT TOOL SELECTION
+   Agent understands question intent and automatically selects right tools.
+   No manual configuration needed.
+
+3. HIGH-QUALITY FOCUS
+   0.85 confidence threshold ensures only verified, high-quality external data.
+
+4. DECISION LEARNING
+   Agent checks past decisions to avoid repeating mistakes and maintain
+   consistency with company strategy.
+
+5. CONCISE & ACTIONABLE
+   Responses are brief but data-rich, focused on actionable insights.
+
+================================================================================
+FILES MODIFIED/CREATED
+================================================================================
+
+Core Agent:
+├── agent/groq_agent.py - Main AI agent with strategic decision framework
+├── agent/tools.py - Tool integration (web + database)
+├── agent/business_tools.py - Database CRUD operations (33 functions)
+└── agent/business_tool_definitions.py - Tool definitions for AI
+
+Backend:
+├── backend/main.py - API endpoints (chat, reset)
+├── backend/database.py - ❌ DELETED (search_history removed)
+└── backend/__init__.py
+
+Database Setup:
+├── setup_business_tables.py - Creates & populates 6 tables with sample data
+└── view_tables.py - View table contents
+
+Configuration:
+├── .env - API keys and AWS credentials
+└── .env.example - Template for configuration
+
+================================================================================
+TESTING THE SYSTEM
+================================================================================
+
+1. Setup Tables (if not done):
+   python3 setup_business_tables.py
+
+2. Start Backend:
+   uvicorn backend.main:app --reload
+
+3. Start Frontend:
+   cd frontend && python3 app.py
+
+4. Try These Questions:
+
+   Internal Data:
+   - "How many users in Germany?"
+   - "Which country has highest revenue?"
+   - "Show me approved decisions"
+   
+   Strategic (BOTH sources):
+   - "Should we expand to France?"
+   - "Should we hire more engineers?"
+   - "Should we increase pricing?"
+   
+   External Data:
+   - "What are tech market trends in 2026?"
+   - "Best practices for SaaS pricing?"
+
+================================================================================
+CONCLUSION
+================================================================================
+
+This is a complete Business Intelligence AI system that:
+✅ Understands natural language questions
+✅ Intelligently combines internal + external data
+✅ Provides data-driven strategic recommendations
+✅ Maintains conversation context
+✅ Delivers high-quality, verified insights
+✅ Keeps responses concise and actionable
+
+The agent excels at strategic "should we" questions where combining company
+data with market intelligence produces superior recommendations.
+
+================================================================================
