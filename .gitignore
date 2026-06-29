@@ -27,7 +27,7 @@ wheels/
 .installed.cfg
 *.egg
 
-# Vector Database (local data - don't push to git)
+# Vector Database (local data - will be generated on deployment)
 vector_db/chroma_data/
 *.db
 *.sqlite
@@ -36,8 +36,10 @@ vector_db/chroma_data/
 *.md
 !README.md
 
-# Demo/Documentation files
+# Documentation and demo files (keep local only)
+docs/
 DEMO_QUICK_REFERENCE.txt
+DEMONSTRATION_GUIDE.md
 business_documents/
 
 # IDE
