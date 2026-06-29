@@ -32,10 +32,12 @@ vector_db/chroma_data/
 *.db
 *.sqlite
 
-# Demo/Documentation files (optional - comment out if you want to include)
-DEMONSTRATION_GUIDE.md
+# All markdown files except README.md
+*.md
+!README.md
+
+# Demo/Documentation files
 DEMO_QUICK_REFERENCE.txt
-DEMO_CHECKLIST.md
 business_documents/
 
 # IDE
